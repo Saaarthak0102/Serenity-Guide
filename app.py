@@ -4,17 +4,18 @@ import time
 from tkinter import Tk
 from pymongo import MongoClient
 import streamlit as st
+from streamlit_navigation_bar import st_navbar
 import plotly.express as px
 import pandas as pd
 import requests, random
 from streamlit_lottie import st_lottie
-from streamlit_option_menu import option_menu
 import streamlit.components.v1 as components
 import os
 from dotenv import load_dotenv
-#AI Integration
+# AI Integration
 import anthropic
 import datetime
+
 # CSS for Scroll to Top Button
 scroll_to_top = """
     <style>
@@ -26,7 +27,7 @@ scroll_to_top = """
         font-size: 18px;
         border: none;
         outline: none;
-        background-color: rgb(4, 170, );
+        background-color: rgb(4, 170, 109);
         color: white;
         cursor: pointer;
         padding: 10px;
@@ -41,15 +42,9 @@ scroll_to_top = """
     </style>
 """
 
-
-
-#Changes made by --Charvi Arora 
-#Added security
-# Load environment variables from .env file
+# Security setup
 load_dotenv()
-# Retrieve the API key
 claude_api_key = os.getenv("CLAUDE_API_KEY")
-
 client = anthropic.Client(api_key=claude_api_key)
 
 def anxiety_management_guide(mood, feeling_description, current_stress_level, recent_events):
@@ -72,7 +67,6 @@ def anxiety_management_guide(mood, feeling_description, current_stress_level, re
         ]
     )
 
-    
 # Set page config (must be the first Streamlit command)
 st.set_page_config(page_title="SereniFi", page_icon=":relieved:", layout="centered")
 st.markdown(scroll_to_top, unsafe_allow_html=True)
@@ -99,7 +93,6 @@ def get_img_as_base64(file):
 # Animated background
 page_bg_img = f"""
 <style>
-/* Animated background gradient */
 [data-testid="stAppViewContainer"] > .main {{
 background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
 background-size: 400% 400%;
@@ -121,8 +114,8 @@ right: 2rem;
 }}
 
 .main .block-container {{
-    max-width: 900px;  /* Increase the width of the centered section */
-    padding: 2rem 1rem;  /* Adjust padding for a more spacious look */
+    max-width: 900px;
+    padding: 2rem 1rem;
 }}
 
 @keyframes gradientBG {{
@@ -141,56 +134,23 @@ right: 2rem;
 
 st.markdown(page_bg_img, unsafe_allow_html=True)
 
-
 def load_lottie_url(url: str):
     response = requests.get(url)
     if response.status_code == 200:
         return response.json()
     return None
 
-# Main function to control page navigation
+# Navigation bar function
 def main():
-    selected = option_menu(
-        menu_title=None,
-        options=["Home", "Calm Space", "Resources", "About & Feedback"],  # Added "Resources"
-        icons=["house-door-fill", "cloud-sun-fill", "book-fill", "chat-dots-fill"],  # Changed icon for "Resources"
-        menu_icon="sun",
-        default_index=0,
-        orientation="horizontal",
-        styles={
-            "container": {
-                "padding": "0!important",
-                "background-color": "#333",
-                "border-radius": "10px",
-                "box-shadow": "0 4px 6px rgba(0, 0, 0, 0.1)",
-                "width": "100%",  # Increase the width of the menu bar
-                "max-width": "100%",  # Prevent overflow
-            },
-            "nav-link": {
-                "font-size": "18px",
-                "text-align": "center",
-                "margin": "0 20px",  # Increase left and right margin to expand space between items
-                "--hover-color": "#ddd",
-                "border-radius": "10px",
-                "color": "#fff",
-                "background-color": "rgba(0, 0, 0, 0.8)",  # More opaque background
-                "transition": "background-color 0.3s ease, transform 0.2s"
-            },
-            "nav-link-selected": {
-                "background-color": "#04AA6D",
-                "color": "#fff",
-                "font-size": "14px",
-            }
-        }
-    )
+    pages = st_navbar(["Home", "Calm Space", "Resources", "About & Feedback"])
 
-    if selected == "Home":
+    if pages == "Home":
         show_main_page()
-    elif selected == "Calm Space":
+    elif pages == "Calm Space":
         show_calm_space()
-    elif selected == "Resources":  # Added condition for "Resources"
-        show_resources()  # Call the new function
-    elif selected == "About & Feedback":
+    elif pages == "Resources":
+        show_resources()
+    elif pages == "About & Feedback":
         show_about_and_feedback()
 
 
